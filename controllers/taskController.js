@@ -1,8 +1,16 @@
+let tasks = [];
+
 export const getAllTasks = (req, res) => {
-  res.send("Get all tasks");
+  res.json(tasks);
 };
 
 export const createTask = (req, res) => {
-    console.log(req.body);
-    res.send("Task created successfully");
+  const newTask = req.body;
+
+  tasks.push(newTask);
+
+  res.status(201).json({
+    message: "Task created successfully",
+    task: newTask
+  });
 };
