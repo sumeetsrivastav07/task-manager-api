@@ -3,5 +3,6 @@ export const getAllTasks = (req, res) => {
 };
 
 export const createTask = (req, res) => {
-  res.send("Create a task");
+    console.log(req.body);
+    res.send("Task created successfully");
 };
