@@ -1,7 +1,7 @@
 import express from "express";
-
+import taskRoutes from "./routes/taskRoutes.js";
 const app = express();
-
+app.use("/",taskRoutes);
 app.get("/", (req, res) => {
   res.send("API is running");
 });
