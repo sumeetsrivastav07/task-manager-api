@@ -6,6 +6,13 @@ export const getAllTasks = (req, res) => {
 };
 
 export const createTask = (req, res) => {
+    const { title } = req.body;
+
+  if (!title || title.trim() === "") {
+    return res.status(400).json({
+      message: "Title is required"
+    });
+  }
   const newTask = {
     id: currentId++,
     title: req.body.title
@@ -21,7 +28,7 @@ export const createTask = (req, res) => {
 
 export const getTaskById = (req, res) => {
   const taskId = Number(req.params.id);
-
+  
   const task = tasks.find((task) => task.id === taskId);
 
   if (!task) {
@@ -34,6 +41,7 @@ export const getTaskById = (req, res) => {
 };
 export const updateTask = (req, res) => {
   const taskId = Number(req.params.id);
+  const { title } = req.body;
 
   const task = tasks.find((task) => task.id === taskId);
 
@@ -43,8 +51,13 @@ export const updateTask = (req, res) => {
     });
   }
 
-  // update logic
-  task.title = req.body.title || task.title;
+  if (!title || title.trim() === "") {
+    return res.status(400).json({
+      message: "Title is required"
+    });
+  }
+
+  task.title = title.trim();
 
   res.json({
     message: "Task updated successfully",
