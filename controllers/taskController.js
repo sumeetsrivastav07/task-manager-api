@@ -32,3 +32,40 @@ export const getTaskById = (req, res) => {
 
   res.json(task);
 };
+export const updateTask = (req, res) => {
+  const taskId = Number(req.params.id);
+
+  const task = tasks.find((task) => task.id === taskId);
+
+  if (!task) {
+    return res.status(404).json({
+      message: "Task not found"
+    });
+  }
+
+  // update logic
+  task.title = req.body.title || task.title;
+
+  res.json({
+    message: "Task updated successfully",
+    task: task
+  });
+};
+export const deleteTask = (req, res) => {
+  const taskId = Number(req.params.id);
+
+  const taskIndex = tasks.findIndex((task) => task.id === taskId);
+
+  if (taskIndex === -1) {
+    return res.status(404).json({
+      message: "Task not found"
+    });
+  }
+
+  const deletedTask = tasks.splice(taskIndex, 1);
+
+  res.json({
+    message: "Task deleted successfully",
+    task: deletedTask[0]
+  });
+};
