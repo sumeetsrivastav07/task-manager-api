@@ -9,7 +9,8 @@ export const createTask = (req, res) => {
     
   const newTask = {
     id: currentId++,
-    title: req.body.title
+    title: req.body.title,
+    completed:false
   };
 
   tasks.push(newTask);
@@ -35,7 +36,6 @@ export const getTaskById = (req, res) => {
 };
 export const updateTask = (req, res) => {
   const taskId = Number(req.params.id);
-  const { title } = req.body;
 
   const task = tasks.find((task) => task.id === taskId);
 
@@ -45,7 +45,15 @@ export const updateTask = (req, res) => {
     });
   }
 
-  task.title = req.body.title;
+  const { title, completed } = req.body;
+
+  if (title !== undefined) {
+    task.title = title;
+  }
+
+  if (completed !== undefined) {
+    task.completed = completed;
+  }
 
   res.json({
     message: "Task updated successfully",
