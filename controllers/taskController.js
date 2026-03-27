@@ -12,7 +12,8 @@ export const createTask = (req, res) => {
   const newTask = {
     id: currentId++,
     title: req.body.title,
-    completed: false
+    completed: false,
+    createdAt:new Date().toISOString()
   };
 
   tasks.push(newTask);
