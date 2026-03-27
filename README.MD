@@ -1,54 +1,94 @@
 # Task Manager API
 
-A simple REST API built with Express.js to manage tasks.
+A beginner-friendly yet well-structured **REST API** built using **Node.js** and **Express.js** for managing tasks.
 
-## Features
+This project was built to understand how a backend application is structured in a real-world style using:
 
-- Create a task
+- Routes
+- Controllers
+- Middleware
+- Validation
+- Error handling
+- Consistent API responses
+
+---
+
+# Overview
+
+This API allows users to:
+
+- Create new tasks
 - Get all tasks
 - Get a single task by ID
-- Update a task
+- Update task details
+- Delete tasks
+
+Each task contains:
+
+- `id`
+- `title`
+- `completed`
+- `createdAt`
+
+This project currently uses **in-memory storage**, which means data is stored temporarily while the server is running.
+
+> If the server restarts, all tasks are reset.
+
+This is intentional for this stage because the focus of the project is on **Express fundamentals and backend architecture**, not database persistence.
+
+---
+
+# Tech Stack
+
+- **Node.js**
+- **Express.js**
+- **JavaScript (ES Modules)**
+- **Thunder Client** (for API testing)
+- **Git & GitHub**
+
+---
+
+# Features
+
+## Core API Features
+- Create a task
+- Read all tasks
+- Read one task by ID
+- Update task title or completion status
 - Delete a task
-- Validation for task input
-- Custom middleware logging
-- Centralized error handling
+
+## Backend Concepts Implemented
+- Express server setup
+- Express Router
+- Controller-based architecture
+- Route-level middleware
+- Global middleware
+- Request validation
+- Custom logger middleware
+- Error-handling middleware
 - 404 route handling
-- Consistent JSON API responses
+- Consistent JSON response structure
 
 ---
 
-## Tech Stack
+# Project Structure
 
-- Node.js
-- Express.js
-- JavaScript (ES Modules)
-
----
-
-## Project Structure
-
+```text
 task-manager-api/
 │
 ├── controllers/
 │   └── taskController.js
 │
+├── middleware/
+│   ├── errorHandler.js
+│   ├── logger.js
+│   └── validateTask.js
+│
 ├── routes/
 │   └── taskRoutes.js
 │
-├── middleware/
-│   ├── logger.js
-│   ├── validateTask.js
-│   └── errorHandler.js
-│
-├── server.js
+├── .gitignore
+├── package-lock.json
 ├── package.json
-└── README.md
-
----
-
-## Installation
-
-Clone the repository and install dependencies:
-
-```bash
-npm install
+├── README.md
+└── server.js
