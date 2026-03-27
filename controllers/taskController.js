@@ -2,37 +2,44 @@ let tasks = [];
 let currentId = 1;
 
 export const getAllTasks = (req, res) => {
-  res.json(tasks);
+  res.json({
+    success: true,
+    message: "Tasks fetched successfully",
+    data: tasks
+  });
 };
-
 export const createTask = (req, res) => {
-    
   const newTask = {
     id: currentId++,
     title: req.body.title,
-    completed:false
+    completed: false
   };
 
   tasks.push(newTask);
 
   res.status(201).json({
+    success: true,
     message: "Task created successfully",
-    task: newTask
+    data: newTask
   });
 };
-
 export const getTaskById = (req, res) => {
   const taskId = Number(req.params.id);
-  
+
   const task = tasks.find((task) => task.id === taskId);
 
   if (!task) {
     return res.status(404).json({
+      success: false,
       message: "Task not found"
     });
   }
 
-  res.json(task);
+  res.json({
+    success: true,
+    message: "Task fetched successfully",
+    data: task
+  });
 };
 export const updateTask = (req, res) => {
   const taskId = Number(req.params.id);
@@ -41,6 +48,7 @@ export const updateTask = (req, res) => {
 
   if (!task) {
     return res.status(404).json({
+      success: false,
       message: "Task not found"
     });
   }
@@ -56,8 +64,9 @@ export const updateTask = (req, res) => {
   }
 
   res.json({
+    success: true,
     message: "Task updated successfully",
-    task: task
+    data: task
   });
 };
 export const deleteTask = (req, res) => {
@@ -67,6 +76,7 @@ export const deleteTask = (req, res) => {
 
   if (taskIndex === -1) {
     return res.status(404).json({
+      success: false,
       message: "Task not found"
     });
   }
@@ -74,7 +84,8 @@ export const deleteTask = (req, res) => {
   const deletedTask = tasks.splice(taskIndex, 1);
 
   res.json({
+    success: true,
     message: "Task deleted successfully",
-    task: deletedTask[0]
+    data: deletedTask[0]
   });
 };
