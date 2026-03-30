@@ -42,8 +42,42 @@ export const signupUser = (req, res) => {
   });
 };
 export const loginUser = (req, res) => {
+  const { email, password } = req.body;
+
+  // Check required fields
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email and password are required"
+    });
+  }
+
+  // Find user by email
+  const user = users.find((user) => user.email === email);
+
+  // Check if user exists
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid credentials"
+    });
+  }
+
+  // Check password
+  if (user.password !== password) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid credentials"
+    });
+  }
+
   res.status(200).json({
     success: true,
-    message: "Login route working"
+    message: "Login successful",
+    data: {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    }
   });
 };
