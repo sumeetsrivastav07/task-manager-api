@@ -2,10 +2,12 @@ import express from "express";
 import taskRoutes from "./routes/taskRoutes.js";
 import logger from "./middleware/logger.js";
 import errorHandler from "./middleware/errorHandler.js";
+import authRoutes from "./routes/authRoutes.js";
 const app = express();
 app.use(logger);
 app.use(express.json());
 app.use("/",taskRoutes);
+app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
   res.send("API is running");
 });
