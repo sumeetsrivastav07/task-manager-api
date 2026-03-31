@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 const JWT_SECRET = "mysecretkey";
 let users = [];
 
-export const signupUser = (req, res) => {
+export const signupUser = async (req, res) => {
   const { name, email, password } = req.body;
 
-  // Check required fields
   if (!name || !email || !password) {
     return res.status(400).json({
       success: false,
@@ -13,7 +13,6 @@ export const signupUser = (req, res) => {
     });
   }
 
-  // Check if user already exists
   const existingUser = users.find((user) => user.email === email);
 
   if (existingUser) {
@@ -23,16 +22,18 @@ export const signupUser = (req, res) => {
     });
   }
 
-  // Create new user
+  // 🔐 HASH PASSWORD
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   const newUser = {
     id: users.length + 1,
     name,
     email,
-    password
+    password: hashedPassword   // 🔥 store hash
   };
 
   users.push(newUser);
-
+  console.log(users);
   res.status(201).json({
     success: true,
     message: "User registered successfully",
@@ -43,10 +44,9 @@ export const signupUser = (req, res) => {
     }
   });
 };
-export const loginUser = (req, res) => {
+export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  // Check required fields
   if (!email || !password) {
     return res.status(400).json({
       success: false,
@@ -54,10 +54,8 @@ export const loginUser = (req, res) => {
     });
   }
 
-  // Find user by email
   const user = users.find((user) => user.email === email);
 
-  // Check if user exists
   if (!user) {
     return res.status(401).json({
       success: false,
@@ -65,24 +63,26 @@ export const loginUser = (req, res) => {
     });
   }
 
-  // Check password
-  if (user.password !== password) {
+  // 🔐 COMPARE HASHED PASSWORD
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
     return res.status(401).json({
       success: false,
       message: "Invalid credentials"
     });
   }
 
-  // Generate JWT
-const token = jwt.sign(
-  { userId: user.id, email: user.email },
-  JWT_SECRET,
-  { expiresIn: "1h" }
-);
+  // JWT
+  const token = jwt.sign(
+    { userId: user.id, email: user.email },
+    JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 
-res.status(200).json({
-  success: true,
-  message: "Login successful",
-  token
-});
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    token
+  });
 };
