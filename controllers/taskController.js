@@ -2,18 +2,25 @@ let tasks = [];
 let currentId = 1;
 
 export const getAllTasks = (req, res) => {
+  // Filter tasks for logged-in user
+  const userTasks = tasks.filter(
+    (task) => task.userId === req.user.userId
+  );
+
   res.json({
     success: true,
     message: "Tasks fetched successfully",
-    data: tasks
+    data: userTasks
   });
 };
+
 export const createTask = (req, res) => {
   const newTask = {
     id: currentId++,
     title: req.body.title,
     completed: false,
-    createdAt:new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    userId: req.user.userId   // 🔥 attach owner
   };
 
   tasks.push(newTask);
@@ -24,10 +31,15 @@ export const createTask = (req, res) => {
     data: newTask
   });
 };
+
 export const getTaskById = (req, res) => {
   const taskId = Number(req.params.id);
 
-  const task = tasks.find((task) => task.id === taskId);
+  const task = tasks.find(
+    (task) =>
+      task.id === taskId &&
+      task.userId === req.user.userId   // 🔥 ownership check
+  );
 
   if (!task) {
     return res.status(404).json({
@@ -42,10 +54,15 @@ export const getTaskById = (req, res) => {
     data: task
   });
 };
+
 export const updateTask = (req, res) => {
   const taskId = Number(req.params.id);
 
-  const task = tasks.find((task) => task.id === taskId);
+  const task = tasks.find(
+    (task) =>
+      task.id === taskId &&
+      task.userId === req.user.userId   // 🔥 ownership check
+  );
 
   if (!task) {
     return res.status(404).json({
@@ -70,10 +87,15 @@ export const updateTask = (req, res) => {
     data: task
   });
 };
+
 export const deleteTask = (req, res) => {
   const taskId = Number(req.params.id);
 
-  const taskIndex = tasks.findIndex((task) => task.id === taskId);
+  const taskIndex = tasks.findIndex(
+    (task) =>
+      task.id === taskId &&
+      task.userId === req.user.userId   // 🔥 ownership check
+  );
 
   if (taskIndex === -1) {
     return res.status(404).json({
