@@ -32,8 +32,7 @@ export const signupUser = async (req, res) => {
   };
 
   users.push(newUser);
-  console.log(users);
-
+  
   res.status(201).json({
     success: true,
     message: "User registered successfully",
@@ -80,8 +79,8 @@ export const loginUser = async (req, res) => {
   );
 
   res.status(200).json({
-    success: true,
-    message: "Login successful",
-    token
-  });
+  success: true,
+  message: "Login successful",
+  data: { token }
+});
 };
