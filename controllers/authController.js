@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-const JWT_SECRET = "mysecretkey";
+
 let users = [];
 
 export const signupUser = async (req, res) => {
@@ -22,18 +22,18 @@ export const signupUser = async (req, res) => {
     });
   }
 
-  // 🔐 HASH PASSWORD
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = {
     id: users.length + 1,
     name,
     email,
-    password: hashedPassword   // 🔥 store hash
+    password: hashedPassword
   };
 
   users.push(newUser);
   console.log(users);
+
   res.status(201).json({
     success: true,
     message: "User registered successfully",
@@ -44,6 +44,7 @@ export const signupUser = async (req, res) => {
     }
   });
 };
+
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -63,7 +64,6 @@ export const loginUser = async (req, res) => {
     });
   }
 
-  // 🔐 COMPARE HASHED PASSWORD
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
@@ -73,10 +73,9 @@ export const loginUser = async (req, res) => {
     });
   }
 
-  // JWT
   const token = jwt.sign(
     { userId: user.id, email: user.email },
-    JWT_SECRET,
+    process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
 

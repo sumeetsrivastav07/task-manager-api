@@ -1,11 +1,8 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = "mysecretkey";
-
 export const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  // Check if token exists
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({
       success: false,
@@ -13,14 +10,11 @@ export const protect = (req, res, next) => {
     });
   }
 
-  // Extract token
   const token = authHeader.split(" ")[1];
 
   try {
-    // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach user info to request
     req.user = decoded;
 
     next();
