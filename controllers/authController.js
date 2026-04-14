@@ -6,12 +6,7 @@ import User from "../models/User.js";
 export const signupUser = async (req, res) => {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Name, email and password are required",
-    });
-  }
+
 
   try {
     // 🔥 Check existing user in DB
@@ -44,9 +39,9 @@ export const signupUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: "Server error",
+      message: error.message
     });
   }
 };
