@@ -1,114 +1,147 @@
-let tasks = [];
-let currentId = 1;
+import Task from "../models/Task.js";
 
-export const getAllTasks = (req, res) => {
-  // Filter tasks for logged-in user
-  const userTasks = tasks.filter(
-    (task) => task.userId === req.user.userId
-  );
+// GET ALL TASKS
+export const getAllTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({
+      userId: req.user.userId,
+    });
 
-  res.json({
-    success: true,
-    message: "Tasks fetched successfully",
-    data: userTasks
-  });
-};
-
-export const createTask = (req, res) => {
-  const newTask = {
-    id: currentId++,
-    title: req.body.title,
-    completed: false,
-    createdAt: new Date().toISOString(),
-    userId: req.user.userId   // 🔥 attach owner
-  };
-
-  tasks.push(newTask);
-
-  res.status(201).json({
-    success: true,
-    message: "Task created successfully",
-    data: newTask
-  });
-};
-
-export const getTaskById = (req, res) => {
-  const taskId = Number(req.params.id);
-
-  const task = tasks.find(
-    (task) =>
-      task.id === taskId &&
-      task.userId === req.user.userId   // 🔥 ownership check
-  );
-
-  if (!task) {
-    return res.status(404).json({
+    res.json({
+      success: true,
+      message: "Tasks fetched successfully",
+      data: tasks,
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
-      message: "Task not found"
+      message: "Server error",
     });
   }
-
-  res.json({
-    success: true,
-    message: "Task fetched successfully",
-    data: task
-  });
 };
 
-export const updateTask = (req, res) => {
-  const taskId = Number(req.params.id);
+// CREATE TASK
+export const createTask = async (req, res) => {
+  try {
+    const { title } = req.body;
 
-  const task = tasks.find(
-    (task) =>
-      task.id === taskId &&
-      task.userId === req.user.userId   // 🔥 ownership check
-  );
+    const newTask = await Task.create({
+      title,
+      userId: req.user.userId, // 🔥 ownership
+    });
 
-  if (!task) {
-    return res.status(404).json({
+    res.status(201).json({
+      success: true,
+      message: "Task created successfully",
+      data: newTask,
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
-      message: "Task not found"
+      message: "Server error",
     });
   }
-
-  const { title, completed } = req.body;
-
-  if (title !== undefined) {
-    task.title = title;
-  }
-
-  if (completed !== undefined) {
-    task.completed = completed;
-  }
-
-  res.json({
-    success: true,
-    message: "Task updated successfully",
-    data: task
-  });
 };
 
-export const deleteTask = (req, res) => {
-  const taskId = Number(req.params.id);
+// GET TASK BY ID
+export const getTaskById = async (req, res) => {
+  try {
+    const task = await Task.findOne({
+      _id: req.params.id,
+      userId: req.user.userId, // 🔥 ownership filter
+    });
 
-  const taskIndex = tasks.findIndex(
-    (task) =>
-      task.id === taskId &&
-      task.userId === req.user.userId   // 🔥 ownership check
-  );
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
 
-  if (taskIndex === -1) {
-    return res.status(404).json({
+    res.json({
+      success: true,
+      message: "Task fetched successfully",
+      data: task,
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
-      message: "Task not found"
+      message: "Server error",
     });
   }
+};
 
-  const deletedTask = tasks.splice(taskIndex, 1);
+// UPDATE TASK
+export const updateTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
 
-  res.json({
-    success: true,
-    message: "Task deleted successfully",
-    data: deletedTask[0]
-  });
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    // 🔥 ownership check
+    if (task.userId.toString() !== req.user.userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const { title, completed } = req.body;
+
+    if (title !== undefined) task.title = title;
+    if (completed !== undefined) task.completed = completed;
+
+    await task.save();
+
+    res.json({
+      success: true,
+      message: "Task updated successfully",
+      data: task,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// DELETE TASK
+export const deleteTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    // 🔥 ownership check
+    if (task.userId.toString() !== req.user.userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    await task.deleteOne();
+
+    res.json({
+      success: true,
+      message: "Task deleted successfully",
+      data: task,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
 };
