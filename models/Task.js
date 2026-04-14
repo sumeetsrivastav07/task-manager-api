@@ -4,12 +4,9 @@ const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: [true, "Title is required"],
       trim: true,
-    },
-    completed: {
-      type: Boolean,
-      default: false,
+      minlength: [3, "Title must be at least 3 characters long"],
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
