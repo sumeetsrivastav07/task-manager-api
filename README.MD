@@ -1,18 +1,17 @@
 # Task Manager API
 
-A beginner-friendly yet well-structured **REST API** built using **Node.js** and **Express.js** for managing tasks with **authentication, authorization, and secure backend architecture**.
+A well-structured **REST API** built using **Node.js, Express.js, and MongoDB** for managing tasks with **authentication, authorization, and persistent data storage**.
 
-This project was built to understand how a backend application evolves in a real-world style using:
+This project demonstrates how a backend evolves from basic structure to a **real-world database-driven system** using:
 
-- Routes
-- Controllers
-- Middleware
-- Validation
-- Error handling
-- JWT Authentication
-- Password Hashing
-- User-specific Authorization
-- Consistent API responses
+* MVC Architecture (Routes → Controllers → Models)
+* MongoDB + Mongoose
+* JWT Authentication
+* Secure password hashing
+* User-specific authorization
+* Schema validation
+* Relationship handling with `populate()`
+* Consistent API responses
 
 ---
 
@@ -20,86 +19,83 @@ This project was built to understand how a backend application evolves in a real
 
 This API allows users to:
 
-- Sign up and create an account
-- Log in securely
-- Create new tasks
-- Get all their tasks
-- Get a single task by ID
-- Update task details
-- Delete tasks
+* Sign up and create an account
+* Log in securely
+* Create new tasks
+* Get all their tasks
+* Get a single task by ID
+* Update task details
+* Delete tasks
 
-Each task contains:
+---
 
-- `id`
-- `title`
-- `completed`
-- `createdAt`
-- `userId`
+# Data Models
 
-Each user contains:
+## User
 
-- `id`
-- `name`
-- `email`
-- `password` (hashed)
+* `_id`
+* `name`
+* `email`
+* `password` (hashed)
+* `createdAt`
+* `updatedAt`
 
-This project currently uses **in-memory storage**, which means data is stored temporarily while the server is running.
+## Task
 
-> If the server restarts, all users and tasks are reset.
+* `_id`
+* `title`
+* `completed`
+* `userId` (reference to User)
+* `createdAt`
+* `updatedAt`
 
-This is intentional for this stage because the focus of the project is on **Express architecture, authentication flow, route protection, and ownership-based access control**, not database persistence.
+---
+
+# Key Backend Concepts
+
+## Authentication & Security
+
+* Password hashing using bcrypt
+* JWT token generation on login
+* Protected routes using middleware
+* Environment variables using `.env`
+
+## Authorization & Ownership
+
+* Each user can access **only their own tasks**
+* Ownership checks implemented for:
+
+  * Get single task
+  * Update task
+  * Delete task
+
+## Database & Relationships
+
+* MongoDB used for persistent storage
+* Mongoose schemas and models
+* Task → User relationship using `userId`
+* `.populate()` to fetch user details inside tasks
+
+## Validation & Error Handling
+
+* Schema-level validation (min length, required fields)
+* Custom validation messages
+* Proper error handling with meaningful responses
 
 ---
 
 # Tech Stack
 
-- **Node.js**
-- **Express.js**
-- **JavaScript (ES Modules)**
-- **bcryptjs** (for password hashing)
-- **jsonwebtoken** (for JWT authentication)
-- **dotenv** (for environment variables)
-- **Thunder Client** (for API testing)
-- **Git & GitHub**
-
----
-
-# Features
-
-## Core API Features
-- User signup
-- User login
-- Create a task
-- Read all tasks
-- Read one task by ID
-- Update a task
-- Delete a task
-
-## Authentication & Security
-- Password hashing using bcrypt
-- JWT token generation on login
-- Protected task routes
-- Authentication middleware
-- Environment-based JWT secret using `.env`
-
-## Authorization & Ownership
-- Each user can access **only their own tasks**
-- Ownership checks for:
-  - Get single task
-  - Update task
-  - Delete task
-
-## Backend Concepts Implemented
-- Express server setup
-- Express Router
-- Controller-based architecture
-- Route-level middleware
-- Global middleware
-- Request validation
-- Custom logger middleware
-- Error-handling middleware
-- 404 route handling
-- Consistent JSON response structure
+* **Node.js**
+* **Express.js**
+* **MongoDB**
+* **Mongoose**
+* **JavaScript (ES Modules)**
+* **bcryptjs**
+* **jsonwebtoken**
+* **dotenv**
+* **Thunder Client / Postman**
+* **Git & GitHub**
 
 ---
 
@@ -108,23 +104,65 @@ This is intentional for this stage because the focus of the project is on **Expr
 ```text
 task-manager-api/
 │
+├── config/
+│   └── db.js                 # MongoDB connection setup
+│
 ├── controllers/
-│   ├── authController.js
-│   └── taskController.js
+│   ├── authController.js    # Signup & login logic
+│   └── taskController.js    # Task CRUD operations
 │
 ├── middleware/
-│   ├── authMiddleware.js
-│   ├── errorHandler.js
-│   ├── logger.js
-│   └── validateTask.js
+│   ├── authMiddleware.js    # JWT verification
+│   ├── errorHandler.js      # Global error handler
+│   ├── logger.js            # Request logger
+│   └── validateTask.js      # Task validation middleware
+│
+├── models/
+│   ├── User.js              # User schema & model
+│   └── Task.js              # Task schema & model
 │
 ├── routes/
-│   ├── authRoutes.js
-│   └── taskRoutes.js
+│   ├── authRoutes.js        # Auth routes
+│   └── taskRoutes.js        # Task routes
 │
+├── .env                     # Environment variables
 ├── .gitignore
-├── package-lock.json
 ├── package.json
 ├── README.md
-├── .env
-└── server.js
+└── server.js               # App entry point
+```
+
+---
+
+# API Flow (High Level)
+
+```text
+Client Request
+→ Route
+→ Middleware (Auth / Validation)
+→ Controller
+→ Model (Mongoose)
+→ MongoDB
+→ Response
+```
+
+---
+
+# Important Notes
+
+* This project now uses **MongoDB for persistent storage**
+* Data is no longer lost on server restart
+* All task operations are **user-specific and secure**
+* Backend follows **clean architecture and separation of concerns**
+
+---
+
+# Future Improvements
+
+* Refresh tokens
+* Role-based access control
+* Pagination & filtering
+* Deployment (Render / AWS)
+* API documentation (Swagger)
+
+---
